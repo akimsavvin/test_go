@@ -1,0 +1,4 @@
+database:
+  connection_string: "postgres://postgres:postgres@localhost:5432/go_test"
+rest_server:
+  address: "localhost:5200"
