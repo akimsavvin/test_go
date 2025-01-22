@@ -48,6 +48,10 @@ func (app *App) Configure() *App {
 }
 
 func (app *App) AddServices() *App {
+	if app.err != nil {
+		return app
+	}
+
 	di.AddValue(app.log)
 
 	di.AddFactory(func() (*sql.DB, error) {
