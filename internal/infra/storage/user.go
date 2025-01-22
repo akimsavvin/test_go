@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"github.com/akimsavvin/efgo"
 	"github.com/akimsavvin/test_go/internal/domain"
 	"github.com/akimsavvin/test_go/internal/usecase"
 	"github.com/akimsavvin/test_go/pkg/changetracker"
@@ -14,14 +15,14 @@ import (
 )
 
 type userSnapshot struct {
-	ID        uuid.UUID
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	Name      string
-	Email     string
+	ID        uuid.UUID `db:"id"`
+	CreatedAt time.Time `db:"created_at"`
+	UpdatedAt time.Time `db:"updated_at"`
+	Name      string    `db:"name"`
+	Email     string    `db:"email"`
 }
 
-func userFromSnapshot(snap userSnapshot) *domain.User {
+func userFromSnapshot(snap *userSnapshot) *domain.User {
 	return domain.NewUser(snap.ID, snap.CreatedAt, snap.UpdatedAt, snap.Name, snap.Email)
 }
 
@@ -35,24 +36,17 @@ var _ usecase.UserRepo = (*UserRepo)(nil)
 
 func NewUserRepo(log *slog.Logger, qx QueryExec, ct *changetracker.ChangeTracker) *UserRepo {
 	return &UserRepo{
-		log: log,
-		qx:  qx,
-		//ctOld:     ct,
+		log:       log,
+		qx:        qx,
 		usersColl: changetracker.Entity[domain.User](ct),
 	}
 }
 
 func (repo *UserRepo) GetByID(ctx context.Context, id uuid.UUID) (*domain.User, error) {
 	query := `SELECT id, created_at, updated_at, name, email FROM users WHERE id = $1;`
-	var snap userSnapshot
 
-	if err := repo.qx.QueryRowContext(ctx, query, id).Scan(
-		&snap.ID,
-		&snap.CreatedAt,
-		&snap.UpdatedAt,
-		&snap.Name,
-		&snap.Email,
-	); err != nil {
+	snap, err := efgo.QueryRowContext[userSnapshot](ctx, repo.qx, query, id)
+	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, domain.ErrUserNotFound
 		}
@@ -61,9 +55,6 @@ func (repo *UserRepo) GetByID(ctx context.Context, id uuid.UUID) (*domain.User, 
 	}
 
 	user := userFromSnapshot(snap)
-	//if repo.ctOld != nil {
-	//	repo.ctOld.addUser(user)
-	//}
 	repo.usersColl.Add(user)
 
 	return user, nil
@@ -84,11 +75,7 @@ func (repo *UserRepo) Insert(ctx context.Context, user *domain.User) error {
 		return err
 	}
 
-	//if repo.ctOld != nil {
-	//	repo.ctOld.addUser(user)
-	//}
 	repo.usersColl.Add(user)
-
 	return nil
 }
 
@@ -100,9 +87,6 @@ func (repo *UserRepo) Remove(ctx context.Context, user *domain.User) error {
 		return err
 	}
 
-	//if repo.ctOld != nil {
-	//	repo.ctOld.removeUser(user)
-	//}
 	repo.usersColl.Remove(user)
 
 	return nil

@@ -8,6 +8,12 @@ github.com/Masterminds/semver/v3 v3.1.1 h1:hLg3sBzpNErnxhQtUy/mmLR2I9foDujNK030I
 github.com/Masterminds/semver/v3 v3.1.1/go.mod h1:VPu/7SZ7ePZ3QOrcuXROw5FAcLl4a0cBrbBpGY/8hQs=
 github.com/Microsoft/go-winio v0.6.2 h1:F2VQgta7ecxGYO8k3ZZz3RS8fVIXVxONVUPlNERoyfY=
 github.com/Microsoft/go-winio v0.6.2/go.mod h1:yd8OoFMLzJbo9gZq8j5qaps8bJ9aShtEA8Ipt1oGCvU=
+github.com/akimsavvin/efgo v1.0.0-beta.2 h1:045nHLb/TL/OM0cgm1jJfUYndUyMP86rDDD9QqnOj2s=
+github.com/akimsavvin/efgo v1.0.0-beta.2/go.mod h1:U5FWukE1U4T44YLKb+KC/zrXNGel5L7z08sRBY/acF8=
+github.com/akimsavvin/efgo v1.0.0-beta.3 h1:7HiiqMbGBgFtINRExs+X55Egrpkf+jKC22Sh+LSMZgg=
+github.com/akimsavvin/efgo v1.0.0-beta.3/go.mod h1:U5FWukE1U4T44YLKb+KC/zrXNGel5L7z08sRBY/acF8=
+github.com/akimsavvin/efgo v1.0.0-beta.4 h1:iBBikvEwJFb1oZSogJQuvebTGcdWM55YQJx1J3WzQMk=
+github.com/akimsavvin/efgo v1.0.0-beta.4/go.mod h1:U5FWukE1U4T44YLKb+KC/zrXNGel5L7z08sRBY/acF8=
 github.com/akimsavvin/gonet/v2 v2.0.0-rc.1 h1:X/7NL4A3GCzh++SSUUHxTr5na3qnImkomu6I1LbbtWk=
 github.com/akimsavvin/gonet/v2 v2.0.0-rc.1/go.mod h1:u1zogzKhi3yVJxhpHUbLGdN1ytpYsQQQrQIF/XkTibY=
 github.com/andybalholm/brotli v1.1.1 h1:PR2pgnyFznKEugtsUo0xLdDop5SKXd5Qf5ysW+7XdTA=

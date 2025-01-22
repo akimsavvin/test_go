@@ -4,10 +4,11 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c1d10e5b-76d7-43e7-885b-0d7b5ad5af98" name="Changes" comment="">
+    <list default="true" id="c1d10e5b-76d7-43e7-885b-0d7b5ad5af98" name="Changes" comment="added efgo">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/infra/app/app.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/infra/app/app.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/usecase/abstractions.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/usecase/abstractions.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/infra/storage/user.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/infra/storage/user.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -117,10 +118,24 @@
       <option name="presentableId" value="Default" />
       <updated>1714215564430</updated>
     </task>
+    <task id="LOCAL-00001" summary="error fix">
+      <option name="closed" value="true" />
+      <created>1737559794811</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1737559794811</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="error fix" />
+    <MESSAGE value="added efgo" />
+    <option name="LAST_COMMIT_MESSAGE" value="added efgo" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>
@@ -129,14 +144,14 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="DlvLineBreakpoint">
-          <url>file://$PROJECT_DIR$/internal/infra/app/app.go</url>
-          <line>94</line>
-          <option name="timeStamp" value="2" />
+          <url>file://$PROJECT_DIR$/internal/infra/storage/user.go</url>
+          <line>47</line>
+          <option name="timeStamp" value="4" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DlvLineBreakpoint">
-          <url>file://$PROJECT_DIR$/internal/presentation/rest/user.go</url>
-          <line>51</line>
-          <option name="timeStamp" value="3" />
+          <url>file://$USER_HOME$/go/pkg/mod/github.com/akimsavvin/efgo@v1.0.0-beta.3/query.go</url>
+          <line>19</line>
+          <option name="timeStamp" value="5" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
