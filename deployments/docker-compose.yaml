@@ -1,0 +1,57 @@
+name: lure_backend
+
+services:
+  lure.backend:
+    image: lure_backend
+    container_name: Lure.Backend
+    build:
+      context: ../
+      dockerfile: ./deployments/Dockerfile
+    ports:
+      - "4000:8080"
+    networks:
+      - storage
+    environment:
+      - ENVIRONMENT=${ENVIRONMENT}
+    depends_on:
+      - lure.postgres
+      - lure.redis
+
+  lure.postgres.master:
+    image: postgres:16.2
+    container_name: Lure.Postgres.Master
+    networks:
+      - storage
+    ports:
+      - "5400:5432"
+    environment:
+      - POSTGRES_USER=lure
+      - POSTGRES_PASSWORD=r2mO05KRvs1v1L3V
+    volumes:
+      - ./.volumes/postgres/master:/var/lib/postgresql/data
+
+  lure.postgres.slave:
+    image: postgres:16.2
+    container_name: Lure.Postgres.Slave
+    networks:
+      - storage
+    ports:
+      - "5401:5432"
+    environment:
+      - POSTGRES_USER=lure
+      - POSTGRES_PASSWORD=r2mO05KRvs1v1L3V
+    volumes:
+      - ./.volumes/postgres/master:/var/lib/postgresql/data
+    depends_on:
+      - lure.postgres.master
+
+  lure.redis:
+    image: redis:bookworm
+    container_name: Lure.Redis
+    networks:
+      - storage
+    ports:
+      - "6379:6379"
+
+networks:
+  storage:

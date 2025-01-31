@@ -10,5 +10,6 @@ type RestServer struct {
 }
 
 type DB struct {
-	ConnStr string `yaml:"connection_string"`
+	MasterURL string `yaml:"master_url"`
+	SlaveURL  string `yaml:"slave_url"`
 }

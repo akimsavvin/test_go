@@ -3,7 +3,7 @@ package changetracker
 import "reflect"
 
 type ChangeTracker struct {
-	// any = *EntityCollection[T]
+	// entities are map[reflect.Type]*EntityCollection[T]
 	entities map[reflect.Type]any
 }
 
@@ -80,10 +80,6 @@ func (coll *EntityCollection[T]) Changed() []*T {
 }
 
 func Entity[T any](ct *ChangeTracker) *EntityCollection[T] {
-	if ct == nil {
-		return nil
-	}
-
 	coll, ok := ct.entities[reflect.TypeFor[T]()]
 	if !ok {
 		panic("ChangeTracker: no entity collection found in change tracker")

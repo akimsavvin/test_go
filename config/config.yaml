@@ -1,4 +1,5 @@
 database:
-  connection_string: "postgres://postgres:postgres@localhost:5432/go_test"
+  master_url: "postgres://postgres:postgres@localhost:5432/go_test_master"
+  slave_url: "postgres://postgres:postgres@localhost:5432/go_test_slave"
 rest_server:
   address: "localhost:5200"

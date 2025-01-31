@@ -54,12 +54,20 @@ func (app *App) AddServices() *App {
 
 	di.AddValue(app.log)
 
-	di.AddFactory(func() (*sql.DB, error) {
-		return sql.Open("pgx", app.cfg.DB.ConnStr)
+	di.AddKeyedFactory("master", func() (*sql.DB, error) {
+		return sql.Open("pgx", app.cfg.DB.MasterURL)
+	})
+	di.AddKeyedFactory("slave", func() (*sql.DB, error) {
+		return sql.Open("pgx", app.cfg.DB.SlaveURL)
 	})
 
-	di.AddService[usecase.UnitOfWorkFactory](storage.NewUnitOfWorkFactory)
-	di.AddService[usecase.UserUseCase](usecase.NewUserUseCase)
+	di.AddFactory(func(log *slog.Logger, sp di.ServiceProvider) (usecase.UnitOfWorkFactory, error) {
+		master := di.GetRequiredKeyedServiceSP[*sql.DB](sp, "master")
+		slave := di.GetRequiredKeyedServiceSP[*sql.DB](sp, "slave")
+		return storage.NewUnitOfWorkFactory(log, master, slave), nil
+	})
+
+	di.AddFactory(usecase.NewUserUseCase)
 	di.AddService[rest.Controller](rest.NewUserController)
 
 	return app

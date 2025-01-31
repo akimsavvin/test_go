@@ -7,6 +7,7 @@ import (
 	"github.com/akimsavvin/test_go/internal/usecase"
 	"github.com/gofiber/fiber/v3"
 	"github.com/google/uuid"
+	"net/http"
 	"time"
 )
 
@@ -18,6 +19,10 @@ type CreateUserRequest struct {
 type UpdateUserRequest struct {
 	Name  string `json:"name"`
 	Email string `json:"email"`
+}
+
+type CreateUserResponse struct {
+	ID uuid.UUID `json:"id"`
 }
 
 type UserResponse struct {
@@ -62,7 +67,7 @@ func (contr *UserController) getById(fCtx fiber.Ctx) error {
 		return fiber.ErrBadRequest
 	}
 
-	userDTO, err := contr.useCase.GetById(fCtx.Context(), id)
+	userDTO, err := contr.useCase.GetByID(fCtx.Context(), id)
 	if err != nil {
 		if errors.Is(err, domain.ErrUserNotFound) {
 			return fiber.ErrNotFound
@@ -87,22 +92,22 @@ func (contr *UserController) create(fCtx fiber.Ctx) error {
 
 	id, err := contr.useCase.Create(fCtx.Context(), dto)
 	if err != nil {
-		return fiber.ErrInternalServerError
+		return fiber.NewError(http.StatusInternalServerError, err.Error())
 	}
 
 	fCtx.Set("Content-Location", fmt.Sprintf("/api/v1/users/%s", id.String()))
-	return fCtx.Status(fiber.StatusCreated).Send(nil)
+	return fCtx.JSON(CreateUserResponse{id})
 }
 
 func (contr *UserController) update(fCtx fiber.Ctx) error {
 	id, err := uuid.Parse(fCtx.Params("id"))
 	if err != nil {
-		return fiber.ErrBadRequest
+		return fiber.NewError(http.StatusBadRequest, "id is not a valid uuid")
 	}
 
 	var req UpdateUserRequest
 	if err = fCtx.Bind().Body(&req); err != nil {
-		return fiber.ErrBadRequest
+		return err
 	}
 
 	dto := &usecase.UpdateUserDTO{
@@ -112,10 +117,10 @@ func (contr *UserController) update(fCtx fiber.Ctx) error {
 
 	if err = contr.useCase.Update(fCtx.Context(), id, dto); err != nil {
 		if errors.Is(err, domain.ErrUserNotFound) {
-			return fiber.ErrNotFound
+			return fiber.NewError(http.StatusNotFound, err.Error())
 		}
 
-		return fiber.ErrInternalServerError
+		return fiber.NewError(http.StatusInternalServerError, err.Error())
 	}
 
 	return fCtx.Status(fiber.StatusOK).Send(nil)
@@ -129,10 +134,10 @@ func (contr *UserController) delete(fCtx fiber.Ctx) error {
 
 	if err = contr.useCase.Delete(fCtx.Context(), id); err != nil {
 		if errors.Is(err, domain.ErrUserNotFound) {
-			return fiber.ErrNotFound
+			return fiber.NewError(http.StatusNotFound, err.Error())
 		}
 
-		return fiber.ErrInternalServerError
+		return fiber.NewError(http.StatusInternalServerError, err.Error())
 	}
 
 	return fCtx.Status(fiber.StatusNoContent).Send(nil)

@@ -27,19 +27,24 @@ func userFromSnapshot(snap *userSnapshot) *domain.User {
 }
 
 type UserRepo struct {
-	log       *slog.Logger
-	qx        QueryExec
-	usersColl *changetracker.EntityCollection[domain.User]
+	log  *slog.Logger
+	qx   QueryExec
+	coll *changetracker.EntityCollection[domain.User]
 }
 
 var _ usecase.UserRepo = (*UserRepo)(nil)
 
 func NewUserRepo(log *slog.Logger, qx QueryExec, ct *changetracker.ChangeTracker) *UserRepo {
-	return &UserRepo{
-		log:       log,
-		qx:        qx,
-		usersColl: changetracker.Entity[domain.User](ct),
+	repo := &UserRepo{
+		log: log,
+		qx:  qx,
 	}
+
+	if ct != nil {
+		repo.coll = changetracker.Entity[domain.User](ct)
+	}
+
+	return repo
 }
 
 func (repo *UserRepo) GetByID(ctx context.Context, id uuid.UUID) (*domain.User, error) {
@@ -55,7 +60,9 @@ func (repo *UserRepo) GetByID(ctx context.Context, id uuid.UUID) (*domain.User, 
 	}
 
 	user := userFromSnapshot(snap)
-	repo.usersColl.Add(user)
+	if repo.coll != nil {
+		repo.coll.Add(user)
+	}
 
 	return user, nil
 }
@@ -75,7 +82,10 @@ func (repo *UserRepo) Insert(ctx context.Context, user *domain.User) error {
 		return err
 	}
 
-	repo.usersColl.Add(user)
+	if repo.coll != nil {
+		repo.coll.Add(user)
+	}
+
 	return nil
 }
 
@@ -87,7 +97,9 @@ func (repo *UserRepo) Remove(ctx context.Context, user *domain.User) error {
 		return err
 	}
 
-	repo.usersColl.Remove(user)
+	if repo.coll != nil {
+		repo.coll.Remove(user)
+	}
 
 	return nil
 }
