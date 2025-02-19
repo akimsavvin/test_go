@@ -5,84 +5,72 @@ import (
 	"database/sql"
 	"errors"
 	"github.com/akimsavvin/gonet/v2/di"
+	"github.com/akimsavvin/test_go/internal/domain"
 	"github.com/akimsavvin/test_go/internal/infra/config"
+	"github.com/akimsavvin/test_go/internal/infra/eventbus"
 	"github.com/akimsavvin/test_go/internal/infra/storage"
+	"github.com/akimsavvin/test_go/internal/presentation/kfk"
 	"github.com/akimsavvin/test_go/internal/presentation/rest"
 	"github.com/akimsavvin/test_go/internal/usecase"
+	"github.com/akimsavvin/test_go/pkg/cache"
 	"github.com/akimsavvin/test_go/pkg/sl"
 	"github.com/gofiber/fiber/v3"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/ilyakaznacheev/cleanenv"
 	_ "github.com/jackc/pgx/v5/stdlib"
+	"github.com/segmentio/kafka-go"
 	"golang.org/x/sync/errgroup"
 	"log/slog"
 	"net/http"
 	"os"
 )
 
-type App struct {
-	ctx context.Context
-	err error
-	log *slog.Logger
-	cfg config.Config
-}
-
-func New(ctx context.Context) *App {
-	return &App{
-		ctx: ctx,
-	}
-}
-
-func (app *App) Configure() *App {
-	app.log = slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+func Run(ctx context.Context) error {
+	log := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
 		AddSource: true,
 		Level:     slog.LevelDebug,
 	}))
 
-	if err := cleanenv.ReadConfig("./config/config.yaml", &app.cfg); err != nil {
-		app.err = err
-		return app
+	var cfg config.Config
+	if err := cleanenv.ReadConfig("./config/config.yaml", &cfg); err != nil {
+		return err
 	}
 
-	return app
-}
+	c := di.NewContainer(
+		di.WithValue(log),
+		di.WithKeyedFactory("master", func() (*sql.DB, error) {
+			return sql.Open("pgx", cfg.DB.MasterURL)
+		}),
+		di.WithKeyedFactory("slave", func() (*sql.DB, error) {
+			return sql.Open("pgx", cfg.DB.SlaveURL)
+		}),
+		di.WithFactory(func(log *slog.Logger, c *di.Container) (usecase.UnitOfWorkFactory, error) {
+			master := di.MustGetKeyedService[*sql.DB](c, "master")
+			slave := di.MustGetKeyedService[*sql.DB](c, "slave")
+			return storage.NewUnitOfWorkFactory(log, master, slave), nil
+		}),
+		di.WithService[cache.JsonCache](cache.NewRedisJsonCache),
+		di.WithFactory(func(log *slog.Logger, cfg config.Config) eventbus.Publisher[*domain.UserCreatedEvent] {
+			return eventbus.NewUserCreatedEventPublisher(log, &kafka.Writer{
+				Addr:  kafka.TCP(cfg.UserCreatedPub.Addrs...),
+				Topic: cfg.UserCreatedPub.Topic,
+			})
+		}),
+		di.WithFactory(func(
+			log *slog.Logger,
+			userCreatedPub eventbus.Publisher[*domain.UserCreatedEvent],
+		) usecase.EventBus {
+			return eventbus.New(log,
+				eventbus.WithEventPublisher(userCreatedPub),
+			)
+		}),
+		di.WithFactory(usecase.NewUserUseCase),
+		di.WithService[rest.Controller](rest.NewUserController),
+	)
 
-func (app *App) AddServices() *App {
-	if app.err != nil {
-		return app
-	}
+	log = log.With(sl.Op("app.Run"))
 
-	di.AddValue(app.log)
-
-	di.AddKeyedFactory("master", func() (*sql.DB, error) {
-		return sql.Open("pgx", app.cfg.DB.MasterURL)
-	})
-	di.AddKeyedFactory("slave", func() (*sql.DB, error) {
-		return sql.Open("pgx", app.cfg.DB.SlaveURL)
-	})
-
-	di.AddFactory(func(log *slog.Logger, sp di.ServiceProvider) (usecase.UnitOfWorkFactory, error) {
-		master := di.GetRequiredKeyedServiceSP[*sql.DB](sp, "master")
-		slave := di.GetRequiredKeyedServiceSP[*sql.DB](sp, "slave")
-		return storage.NewUnitOfWorkFactory(log, master, slave), nil
-	})
-
-	di.AddFactory(usecase.NewUserUseCase)
-	di.AddService[rest.Controller](rest.NewUserController)
-
-	return app
-}
-
-func (app *App) Run() error {
-	if app.err != nil {
-		return app.err
-	}
-
-	di.Build()
-
-	log := app.log.With(sl.Op("app.Run"))
-
-	db := di.GetRequiredService[*sql.DB]()
+	db := di.MustGetKeyedService[*sql.DB](c, "master")
 	log.Debug("migrating database")
 	if err := storage.Migrate(db); err != nil {
 		log.Debug("could not migrate database", sl.Err(err))
@@ -90,20 +78,20 @@ func (app *App) Run() error {
 	}
 	log.Info("migrated database")
 
-	g, _ := errgroup.WithContext(app.ctx)
+	g, ctx := errgroup.WithContext(ctx)
 
 	g.Go(func() error {
-		log := log.With(slog.String("address", app.cfg.RestServer.Addr))
+		log := log.With(slog.String("address", cfg.RestServer.Addr))
 		log.Debug("starting REST server")
 
 		fiberApp := fiber.New()
+		v1 := fiberApp.Group("/api/v1")
 
-		root := fiberApp.Group("/api/v1")
-		for _, c := range di.GetRequiredService[[]rest.Controller]() {
-			c.Init(root)
+		for _, c := range di.MustGetService[[]rest.Controller](c) {
+			c.Init(v1)
 		}
 
-		if err := fiberApp.Listen(app.cfg.RestServer.Addr); err != nil {
+		if err := fiberApp.Listen(cfg.RestServer.Addr); err != nil {
 			if errors.Is(err, http.ErrServerClosed) {
 				log.Info("REST server stopped")
 			} else {
@@ -115,6 +103,13 @@ func (app *App) Run() error {
 
 		return nil
 	})
+
+	log.Debug("starting kafka consumers")
+	for _, c := range di.MustGetService[[]kfk.Consumer](c) {
+		g.Go(func() error {
+			return c.Run(ctx)
+		})
+	}
 
 	return g.Wait()
 }

@@ -63,3 +63,11 @@ func (u *User) Update(name, email string) {
 	u.email = email
 	u.updatedAt = time.Now()
 }
+
+type UserCreatedEvent struct {
+	ID        uuid.UUID `json:"id"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+	Name      string    `json:"name"`
+	Email     string    `json:"email"`
+}

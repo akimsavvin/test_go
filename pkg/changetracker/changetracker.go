@@ -21,10 +21,13 @@ func New(opts ...Option) *ChangeTracker {
 	return ct
 }
 
-func WithEntity[T any](getKeyFunc GetEntityKeyFunc[T], hasChangedFunc HasEntityChangedFunc[T]) Option {
+func WithEntity[T any](
+	getKeyFunc GetEntityKeyFunc[T],
+	hasChangedFunc HasEntityChangedFunc[T],
+	copyFunc ...CopyEntityFunc[T]) Option {
 	return func(ct *ChangeTracker) {
 		typ := reflect.TypeFor[T]()
-		coll := NewEntityCollection(getKeyFunc, hasChangedFunc)
+		coll := NewEntityCollection(getKeyFunc, hasChangedFunc, copyFunc...)
 
 		ct.entities[typ] = coll
 	}
@@ -39,26 +42,41 @@ type GetEntityKeyFunc[T any] func(*T) any
 
 type HasEntityChangedFunc[T any] func(*T, *T) bool
 
+type CopyEntityFunc[T any] func(*T) *T
+
 type EntityCollection[T any] struct {
 	entities       map[any]*entity[T]
 	getKeyFunc     GetEntityKeyFunc[T]
 	hasChangedFunc HasEntityChangedFunc[T]
+	copyFunc       CopyEntityFunc[T]
 }
 
 func NewEntityCollection[T any](
 	getKeyFunc GetEntityKeyFunc[T],
-	hasChangedFunc HasEntityChangedFunc[T]) *EntityCollection[T] {
-	return &EntityCollection[T]{
+	hasChangedFunc HasEntityChangedFunc[T],
+	copyFunc ...CopyEntityFunc[T]) *EntityCollection[T] {
+	coll := &EntityCollection[T]{
 		entities:       make(map[any]*entity[T]),
 		getKeyFunc:     getKeyFunc,
 		hasChangedFunc: hasChangedFunc,
 	}
+
+	if len(copyFunc) > 0 {
+		coll.copyFunc = copyFunc[0]
+	} else {
+		coll.copyFunc = func(e *T) *T {
+			copied := new(T)
+			*copied = *e
+			return copied
+		}
+	}
+
+	return coll
 }
 
 func (coll *EntityCollection[T]) Add(e *T) {
 	key := coll.getKeyFunc(e)
-	initial := new(T)
-	*initial = *e
+	initial := coll.copyFunc(e)
 	coll.entities[key] = &entity[T]{initial, e}
 }
 

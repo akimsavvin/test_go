@@ -5,22 +5,23 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c1d10e5b-76d7-43e7-885b-0d7b5ad5af98" name="Changes" comment="refactoring">
-      <change afterPath="$PROJECT_DIR$/deployments/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/deployments/Dockerfile" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/deployments/docker-compose.yaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/internal/usecase/user-dto.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pkg/cache/json.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/tree-test/main.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/internal/infra/eventbus/eventbus.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/internal/infra/eventbus/user-created.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/internal/presentation/kfk/consumer.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/internal/presentation/kfk/user.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pkg/cache/abstractions.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/config.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/config/config.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/lure/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/lure/main.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/domain/user.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/domain/user.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/internal/infra/app/app.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/infra/app/app.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/internal/infra/config/config.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/infra/config/config.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/infra/storage/unit-of-work.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/infra/storage/unit-of-work.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/infra/storage/user.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/infra/storage/user.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/presentation/rest/user.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/presentation/rest/user.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/presentation/rest/controller.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/presentation/rest/controller.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/internal/usecase/abstractions.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/usecase/abstractions.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/internal/usecase/user.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/usecase/user.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/cache/json.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/cache/redis-json.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pkg/changetracker/changetracker.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/changetracker/changetracker.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -31,8 +32,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Go File" />
         <option value="Go Application" />
+        <option value="Go File" />
       </list>
     </option>
   </component>
@@ -56,6 +57,9 @@
   <component name="KubernetesApiProvider">{
   &quot;isMigrated&quot;: true
 }</component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 1
 }</component>
@@ -67,31 +71,32 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "DefaultGoTemplateProperty": "Go Application",
-    "Go Build.go build github.com/akimsavvin/test_go/cmd/lure.executor": "Run",
-    "Go Build.go build lure_test_go/cmd/lure.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.go.formatter.settings.were.checked": "true",
-    "RunOnceActivity.go.migrated.go.modules.settings": "true",
-    "RunOnceActivity.go.modules.go.list.on.any.changes.was.set": "true",
-    "git-widget-placeholder": "main",
-    "go.import.settings.migrated": "true",
-    "last_opened_file_path": "/Users/akimsavvin/Documents/projects/test_go",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "onboarding.tips.debug.path": "/Users/akimsavvin/Documents/projects/lure_test_go/main.go",
-    "settings.editor.selected.configurable": "preferences.lookFeel",
-    "ts.external.directory.path": "/Users/akimsavvin/Applications/GoLand.app/Contents/plugins/javascript-plugin/jsLanguageServicesImpl/external"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;DefaultGoTemplateProperty&quot;: &quot;Go File&quot;,
+    &quot;Go Build.go build github.com/akimsavvin/test_go/cmd/lure.executor&quot;: &quot;Run&quot;,
+    &quot;Go Build.go build github.com/akimsavvin/test_go/cmd/tree-test.executor&quot;: &quot;Run&quot;,
+    &quot;Go Build.go build lure_test_go/cmd/lure.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.formatter.settings.were.checked&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.migrated.go.modules.settings&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.modules.go.list.on.any.changes.was.set&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;go.import.settings.migrated&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/akimsavvin/Documents/projects/test_go&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;onboarding.tips.debug.path&quot;: &quot;/Users/akimsavvin/Documents/projects/lure_test_go/main.go&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;/Users/akimsavvin/Applications/GoLand.app/Contents/plugins/javascript-plugin/jsLanguageServicesImpl/external&quot;
   },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "postgresql"
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;postgresql&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$" />
@@ -104,7 +109,7 @@
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Go Build.go build github.com/akimsavvin/test_go/cmd/lure">
     <configuration name="go build github.com/akimsavvin/test_go/cmd/lure" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
       <module name="test_go" />
       <working_directory value="$PROJECT_DIR$" />
@@ -114,17 +119,27 @@
       <filePath value="$PROJECT_DIR$/cmd/lure/main.go" />
       <method v="2" />
     </configuration>
+    <configuration name="go build github.com/akimsavvin/test_go/cmd/tree-test" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+      <module name="test_go" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="PACKAGE" />
+      <package value="github.com/akimsavvin/test_go/cmd/tree-test" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$/cmd/tree-test/main.go" />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
         <item itemvalue="Go Build.go build github.com/akimsavvin/test_go/cmd/lure" />
+        <item itemvalue="Go Build.go build github.com/akimsavvin/test_go/cmd/tree-test" />
       </list>
     </recent_temporary>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-gosdk-d297c17c1fbd-85c80fddc9a6-org.jetbrains.plugins.go.sharedIndexes.bundled-GO-243.23654.119" />
-        <option value="bundled-js-predefined-d6986cc7102b-822845ee3bb5-JavaScript-GO-243.23654.119" />
+        <option value="bundled-gosdk-d297c17c1fbd-85c80fddc9a6-org.jetbrains.plugins.go.sharedIndexes.bundled-GO-243.23654.166" />
+        <option value="bundled-js-predefined-d6986cc7102b-822845ee3bb5-JavaScript-GO-243.23654.166" />
       </set>
     </attachedChunks>
   </component>
@@ -161,7 +176,15 @@
       <option name="project" value="LOCAL" />
       <updated>1737561390936</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="refactoring">
+      <option name="closed" value="true" />
+      <created>1738336845290</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1738336845290</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -179,11 +202,6 @@
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
-        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
-          <url>file://$PROJECT_DIR$/internal/infra/storage/user.go</url>
-          <line>52</line>
-          <option name="timeStamp" value="4" />
-        </line-breakpoint>
         <line-breakpoint enabled="true" type="DlvLineBreakpoint">
           <url>file://$USER_HOME$/go/pkg/mod/github.com/akimsavvin/efgo@v1.0.0-beta.3/query.go</url>
           <line>19</line>

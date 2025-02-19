@@ -71,3 +71,9 @@ type UnitOfWorkFactory interface {
 	// StartReadWork starts a new unit of read work
 	StartReadWork(ctx context.Context) (UnitOfReadWork, error)
 }
+
+// EventBus is an event bus
+type EventBus interface {
+	// Publish publishes an event
+	Publish(ctx context.Context, event any) error
+}
