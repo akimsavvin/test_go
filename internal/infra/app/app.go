@@ -18,6 +18,7 @@ import (
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/ilyakaznacheev/cleanenv"
 	_ "github.com/jackc/pgx/v5/stdlib"
+	"github.com/redis/go-redis/v9"
 	"github.com/segmentio/kafka-go"
 	"golang.org/x/sync/errgroup"
 	"log/slog"
@@ -44,15 +45,21 @@ func Run(ctx context.Context) error {
 		di.WithKeyedFactory("slave", func() (*sql.DB, error) {
 			return sql.Open("pgx", cfg.DB.SlaveURL)
 		}),
+		di.WithFactory(func(c *di.Container) (*sql.DB, error) {
+			return di.GetKeyedService[*sql.DB](c, "master")
+		}),
 		di.WithFactory(func(log *slog.Logger, c *di.Container) (usecase.UnitOfWorkFactory, error) {
 			master := di.MustGetKeyedService[*sql.DB](c, "master")
 			slave := di.MustGetKeyedService[*sql.DB](c, "slave")
 			return storage.NewUnitOfWorkFactory(log, master, slave), nil
 		}),
+		di.WithValue(redis.NewClient(&redis.Options{
+			Addr: "localhost:6379",
+		})),
 		di.WithService[cache.JsonCache](cache.NewRedisJsonCache),
-		di.WithFactory(func(log *slog.Logger, cfg config.Config) eventbus.Publisher[*domain.UserCreatedEvent] {
+		di.WithFactory(func(log *slog.Logger) eventbus.Publisher[*domain.UserCreatedEvent] {
 			return eventbus.NewUserCreatedEventPublisher(log, &kafka.Writer{
-				Addr:  kafka.TCP(cfg.UserCreatedPub.Addrs...),
+				Addr:  kafka.TCP(cfg.UserCreatedPub.Brokers...),
 				Topic: cfg.UserCreatedPub.Topic,
 			})
 		}),
@@ -66,11 +73,20 @@ func Run(ctx context.Context) error {
 		}),
 		di.WithFactory(usecase.NewUserUseCase),
 		di.WithService[rest.Controller](rest.NewUserController),
+		di.WithService[kfk.Consumer](func(log *slog.Logger, useCase usecase.UserUseCase) *kfk.CreateUserConsumer {
+			consCfg := kfk.ConsumerConfig{
+				Brokers: cfg.CreateUserCons.Brokers,
+				Topic:   cfg.CreateUserCons.Topic,
+				GroupID: cfg.CreateUserCons.Topic,
+			}
+
+			return kfk.NewCreateUserConsumer(log, consCfg, useCase)
+		}),
 	)
 
 	log = log.With(sl.Op("app.Run"))
 
-	db := di.MustGetKeyedService[*sql.DB](c, "master")
+	db := di.MustGetService[*sql.DB](c)
 	log.Debug("migrating database")
 	if err := storage.Migrate(db); err != nil {
 		log.Debug("could not migrate database", sl.Err(err))
@@ -87,8 +103,8 @@ func Run(ctx context.Context) error {
 		fiberApp := fiber.New()
 		v1 := fiberApp.Group("/api/v1")
 
-		for _, c := range di.MustGetService[[]rest.Controller](c) {
-			c.Init(v1)
+		for _, cont := range di.MustGetService[[]rest.Controller](c) {
+			cont.Init(v1)
 		}
 
 		if err := fiberApp.Listen(cfg.RestServer.Addr); err != nil {
@@ -105,9 +121,9 @@ func Run(ctx context.Context) error {
 	})
 
 	log.Debug("starting kafka consumers")
-	for _, c := range di.MustGetService[[]kfk.Consumer](c) {
+	for _, cons := range di.MustGetService[[]kfk.Consumer](c) {
 		g.Go(func() error {
-			return c.Run(ctx)
+			return cons.Run(ctx)
 		})
 	}
 

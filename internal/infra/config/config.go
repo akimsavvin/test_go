@@ -3,6 +3,7 @@ package config
 type Config struct {
 	DB             DB                   `yaml:"database"`
 	RestServer     RestServer           `yaml:"rest_server"`
+	CreateUserCons CreateUserConsumer   `yaml:"create_user_consumer"`
 	UserCreatedPub UserCreatedPublisher `yaml:"user_created_publisher"`
 }
 
@@ -15,7 +16,13 @@ type DB struct {
 	SlaveURL  string `yaml:"slave_url"`
 }
 
+type CreateUserConsumer struct {
+	Brokers []string `yaml:"brokers"`
+	Topic   string   `yaml:"topic"`
+	GroupID string   `yaml:"group_id"`
+}
+
 type UserCreatedPublisher struct {
-	Addrs []string `yaml:"addresses"`
-	Topic string   `yaml:"topic"`
+	Brokers []string `yaml:"brokers"`
+	Topic   string   `yaml:"topic"`
 }

@@ -3,3 +3,12 @@ database:
   slave_url: "postgres://postgres:postgres@localhost:5432/go_test_slave"
 rest_server:
   address: "localhost:5200"
+create_user_consumer:
+  brokers:
+    - "localhost:9092"
+  topic: "create_user"
+  group_id: "go_test_group"
+user_created_publisher:
+  brokers:
+    - "localhost:9092"
+  topic: "user_created"

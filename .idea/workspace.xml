@@ -4,25 +4,12 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c1d10e5b-76d7-43e7-885b-0d7b5ad5af98" name="Changes" comment="refactoring">
-      <change afterPath="$PROJECT_DIR$/cmd/tree-test/main.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/internal/infra/eventbus/eventbus.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/internal/infra/eventbus/user-created.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/internal/presentation/kfk/consumer.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/internal/presentation/kfk/user.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pkg/cache/abstractions.go" afterDir="false" />
+    <list default="true" id="c1d10e5b-76d7-43e7-885b-0d7b5ad5af98" name="Changes" comment="refactored to new gonet rc.2">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/lure/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/lure/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/domain/user.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/domain/user.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/tree-test/main.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/config.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/config/config.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/internal/infra/app/app.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/infra/app/app.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/internal/infra/config/config.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/infra/config/config.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/presentation/rest/controller.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/presentation/rest/controller.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/usecase/abstractions.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/usecase/abstractions.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/usecase/user.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/usecase/user.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/cache/json.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/cache/redis-json.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/changetracker/changetracker.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/changetracker/changetracker.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -194,7 +181,8 @@
     <MESSAGE value="error fix" />
     <MESSAGE value="added efgo" />
     <MESSAGE value="refactoring" />
-    <option name="LAST_COMMIT_MESSAGE" value="refactoring" />
+    <MESSAGE value="refactored to new gonet rc.2" />
+    <option name="LAST_COMMIT_MESSAGE" value="refactored to new gonet rc.2" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>
@@ -206,6 +194,16 @@
           <url>file://$USER_HOME$/go/pkg/mod/github.com/akimsavvin/efgo@v1.0.0-beta.3/query.go</url>
           <line>19</line>
           <option name="timeStamp" value="5" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$USER_HOME$/go/pkg/mod/github.com/akimsavvin/gonet/v2@v2.0.0-rc.2/di/accessor.go</url>
+          <line>76</line>
+          <option name="timeStamp" value="6" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$USER_HOME$/go/pkg/mod/github.com/akimsavvin/gonet/v2@v2.0.0-rc.2/di/accessor.go</url>
+          <line>63</line>
+          <option name="timeStamp" value="7" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
